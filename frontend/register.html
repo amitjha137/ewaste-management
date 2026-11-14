@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#0d2218">
+  <title>Register — E-Waste</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="login-style.css">
+  <script src="config.js"></script>
+</head>
+<body class="auth-body">
+  <div class="auth-shell">
+    <aside class="auth-aside">
+      <a class="auth-brand" href="index.html"><span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.4-5.7"/><path d="M20.5 3v4.5H16"/><path d="M9 15c0-3.2 2.1-5.2 6-5.2 0 4-2 6.2-5.2 6.2"/></svg></span><span>E-Waste</span></a>
+      <div class="auth-pitch">
+        <h1>Join the network. <em>Make waste count.</em></h1>
+        <p>Create a free account and start earning points, badges and a clear picture of your environmental impact.</p>
+      </div>
+      <div class="auth-stats">
+        <div><b>Live</b><span>Bin fill levels</span></div>
+        <div><b>10 pts</b><span>Per kg recycled</span></div>
+        <div><b>2.5 kg</b><span>CO₂ saved per kg</span></div>
+      </div>
+    </aside>
+    <main class="auth-main">
+      <div class="auth-container">
+        <div class="eyebrow">Create account</div>
+        <h2>Let&rsquo;s get you set up</h2>
+        <p class="lede">It takes less than a minute.</p>
+        <form id="registerForm">
+          <label>Name<input name="name" placeholder="Your name" autocomplete="name" required></label>
+          <label>Email<input name="email" type="email" placeholder="you@example.com" autocomplete="email" required></label>
+          <label>Password<input name="password" type="password" placeholder="At least 6 characters" autocomplete="new-password" required minlength="6"></label>
+          <button type="submit" class="btn">Register</button>
+        </form>
+        <p class="auth-switch">Already have an account? <a href="login.html">Sign in</a></p>
+        <a class="auth-back" href="index.html">← Back to home</a>
+      </div>
+    </main>
+  </div>
+  <script type="module">
+    import { register } from './auth.js';
+    const f = document.getElementById('registerForm');
+    f.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      try { await register(f); } catch (err) { alert(err && err.error ? err.error : 'Register failed'); }
+    });
+  </script>
+</body>
+</html>

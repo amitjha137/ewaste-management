@@ -1,0 +1,10 @@
+fastapi
+uvicorn[standard]
+pydantic
+torch
+torchvision
+pillow
+requests
+python-multipart
+# optional: only needed if MODEL_DOWNLOAD_URL is an s3:// URL
+# boto3

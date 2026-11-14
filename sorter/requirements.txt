@@ -1,0 +1,8 @@
+torch
+torchvision
+pillow
+numpy
+opencv-python
+pyserial
+requests
+python-socketio[client]

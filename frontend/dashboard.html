@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0d2218">
+  <title>Dashboard | E-Waste Management</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="config.js"></script>
+</head>
+<body>
+  <!-- Collection Modal -->
+  <div id="collectModal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <button class="modal-close" id="closeCollectModal" aria-label="Close">×</button>
+      <h3>Mark bin as collected</h3>
+      <form id="collectFormModal">
+        <label for="collectBinSelectModal">Select bin</label>
+        <select id="collectBinSelectModal" required></select>
+        <label for="collectAmountInputModal">Amount (kg)</label>
+        <input type="number" id="collectAmountInputModal" min="0.1" step="0.1" required placeholder="e.g. 5">
+        <button type="submit" class="btn">Collect</button>
+      </form>
+    </div>
+  </div>
+  <!-- Deposit Modal -->
+  <div id="depositModal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <button class="modal-close" id="closeDepositModal" aria-label="Close">×</button>
+      <h3>Deposit e-waste</h3>
+      <form id="depositFormModal">
+        <label for="binSelectModal">Select bin</label>
+        <select id="binSelectModal" required></select>
+        <label for="amountInputModal">Amount (kg)</label>
+        <input type="number" id="amountInputModal" min="0.1" step="0.1" required placeholder="e.g. 2.5">
+        <button type="submit" class="btn">Deposit</button>
+      </form>
+    </div>
+  </div>
+  <div class="hamburger-menu" id="hamburgerMenu" aria-label="Open menu">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+  <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+    <div class="sidebar-header">
+      <div class="sidebar-logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.4-5.7"/><path d="M20.5 3v4.5H16"/><path d="M9 15c0-3.2 2.1-5.2 6-5.2 0 4-2 6.2-5.2 6.2"/></svg></div>
+      <div class="sidebar-title">E-Waste<small>Recycling network</small></div>
+    </div>
+    <ul class="sidebar-menu">
+      <li><a href="index.html"><span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg></span> Home</a></li>
+      <li><a href="dashboard.html"><span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7.5" height="9" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="5" rx="1.5"/><rect x="13.5" y="11" width="7.5" height="10" rx="1.5"/><rect x="3" y="15" width="7.5" height="6" rx="1.5"/></svg></span> Dashboard</a></li>
+      <li><a href="bin-user.html"><span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg></span> Bin User</a></li>
+      <li><a href="#" id="collectorTab"><span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 6h11v10H2z"/><path d="M13 9h4l4 4v3h-8"/><circle cx="6.5" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/></svg></span> Collector</a></li>
+      <li><a href="#" id="adminTab"><span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg></span> Admin</a></li>
+      <li><a href="box-status.html"><span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg></span> Box Status</a></li>
+      <li><a href="stats.html"><span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V11M10 20V4M16 20v-7M22 20H2"/></svg></span> Stats</a></li>
+      <li><a href="about.html"><span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5"/></svg></span> About</a></li>
+    </ul>
+  </aside>
+  <main id="dashboardContent" class="main-content">
+    <!-- Dashboard content will be loaded here by JS (collector/admin panels) -->
+    <div class="page-head slide-in-up">
+      <div class="eyebrow">Dashboard</div>
+      <h2>Choose your workspace</h2>
+      <p>Pick the view that matches what you do on the network. You can switch any time from the sidebar.</p>
+    </div>
+    <div class="role-grid">
+      <a class="role-card slide-in-up" href="bin-user.html">
+        <span class="glyph"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg></span>
+        <b>Bin User</b>
+        <span class="d">Deposit e-waste, earn points and badges, and track your personal impact.</span>
+        <span class="go">Open my dashboard →</span>
+      </a>
+      <button type="button" class="role-card slide-in-up" style="animation-delay:.08s" data-open="collectorTab">
+        <span class="glyph"><svg viewBox="0 0 24 24"><path d="M2 6h11v10H2z"/><path d="M13 9h4l4 4v3h-8"/><circle cx="6.5" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/></svg></span>
+        <b>Collector</b>
+        <span class="d">See which bins are filling up and log every pickup in seconds.</span>
+        <span class="go">Open collector tools →</span>
+      </button>
+      <button type="button" class="role-card slide-in-up" style="animation-delay:.16s" data-open="adminTab">
+        <span class="glyph"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg></span>
+        <b>Admin</b>
+        <span class="d">Manage bins, users, devices and platform-wide numbers.</span>
+        <span class="go">Open admin panel →</span>
+      </button>
+    </div>
+  </main>
+  <script src="sidebar.js"></script>
+  <script type="module" src="notifications.js"></script>
+  <!-- Chart.js for charts used in dashboard-charts.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <!-- Load dashboard as an ES module so imports work -->
+  <script type="module" src="dashboard.js"></script>
+  
+  <script type="module" src="iot.js"></script>
+  <script>
+    // Role cards simply trigger the matching sidebar tab (handled by dashboard.js)
+    document.addEventListener('click', function (e) {
+      var b = e.target.closest('[data-open]');
+      if (!b) return;
+      var t = document.getElementById(b.getAttribute('data-open'));
+      if (t) t.click();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+[build]
+  # Netlify will build from the `frontend` directory. When the base is
+  # `frontend` the build command must reference the script in the repo root
+  # (one level up) so use `../scripts/...` below. Publish the current base (.)
+  base = "frontend"
+  command = "node ../scripts/generate_frontend_config.js"
+  publish = "."
+
+[build.environment]
+# The generator script (scripts/generate_frontend_config.js) reads BACKEND_URL
+# at build time and writes it into `frontend/config.js`. Set your Render backend
+# URL here so deployed frontend points to the correct backend.
+BACKEND_URL = "https://e-waste-backend-3qxc.onrender.com"
+# Optional: provide multiple backends (comma-separated). The generator will
+# produce `window.BACKEND_URLS` (array) and `window.BACKEND_URL` (first entry).
+# Example value below contains both of your backend URLs.
+BACKEND_URLS = "https://e-waste-1-agt0.onrender.com/,https://e-waste-backend-3qxc.onrender.com/"
+
+[dev]
+  # For local dev (netlify dev) run the generator from the repo root then serve
+  # the frontend directory (base). When using `base = "frontend"` serve `.`
+  command = "node ../scripts/generate_frontend_config.js && npx http-server . -p 8888"
+  port = 8888
+
+# You can also add redirect rules or headers here if needed.

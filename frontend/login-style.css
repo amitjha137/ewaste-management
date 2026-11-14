@@ -1,0 +1,101 @@
+/* Auth pages (login / register). Loaded after style.css, which supplies tokens. */
+
+body.auth-body { background: var(--forest); }
+
+.auth-shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+}
+
+/* Brand side */
+.auth-aside {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: clamp(1.75rem, 4vw, 3.5rem);
+  color: #e6efe9;
+  background:
+    radial-gradient(520px 320px at 100% 0%, rgba(201, 242, 107, .28), transparent 65%),
+    radial-gradient(420px 320px at 0% 100%, rgba(31, 122, 77, .55), transparent 65%),
+    var(--forest);
+}
+.auth-aside::before {
+  /* concentric "recycling loop" rings */
+  content: '';
+  position: absolute; right: -140px; bottom: -140px;
+  width: 460px; height: 460px; border-radius: 50%;
+  border: 1px solid rgba(201, 242, 107, .28);
+  box-shadow:
+    0 0 0 50px rgba(201, 242, 107, .04),
+    0 0 0 50px rgba(201, 242, 107, 0),
+    0 0 0 100px rgba(201, 242, 107, .03);
+  pointer-events: none;
+}
+.auth-brand { display: flex; align-items: center; gap: .7rem; text-decoration: none; color: #fff; position: relative; z-index: 1; }
+.auth-brand .mark {
+  width: 40px; height: 40px; border-radius: 12px; background: var(--lime); color: var(--forest);
+  display: grid; place-items: center;
+}
+.auth-brand .mark svg { width: 23px; height: 23px; }
+.auth-brand span { font-family: var(--font-display); font-weight: 800; font-size: 1.3rem; letter-spacing: -.02em; }
+
+.auth-pitch { position: relative; z-index: 1; max-width: 30rem; }
+.auth-pitch h1 {
+  color: #fff;
+  font-size: clamp(2.1rem, 1.3rem + 2.8vw, 3.5rem);
+  font-weight: 800;
+  line-height: 1.02;
+  margin-bottom: 1rem;
+}
+.auth-pitch h1 em { font-style: normal; color: var(--lime); }
+.auth-pitch p { color: rgba(230, 239, 233, .75); font-size: 1.05rem; }
+
+.auth-stats { display: flex; gap: 1.75rem; flex-wrap: wrap; position: relative; z-index: 1; }
+.auth-stats div { line-height: 1.2; }
+.auth-stats b { display: block; font-family: var(--font-display); font-size: 1.7rem; font-weight: 800; color: var(--lime); letter-spacing: -.02em; }
+.auth-stats span { font-size: .78rem; color: rgba(230, 239, 233, .65); text-transform: uppercase; letter-spacing: .1em; }
+
+/* Form side */
+.auth-main {
+  display: flex; align-items: center; justify-content: center;
+  padding: 2rem 1.25rem;
+  background: var(--bg);
+  border-radius: 28px 0 0 28px;
+}
+.auth-container {
+  width: min(420px, 100%);
+}
+.auth-container .eyebrow { margin-bottom: .75rem; }
+.auth-container h2 { font-size: 2.1rem; margin-bottom: .4rem; }
+.auth-container .lede { color: var(--ink-2); margin-bottom: 1.75rem; }
+
+.auth-container form { display: flex; flex-direction: column; gap: 1rem; }
+.auth-container form label { display: flex; flex-direction: column; gap: .4rem; font-size: .85rem; font-weight: 600; color: var(--ink); }
+.auth-container form input { padding: .8rem 1rem; background: var(--surface); }
+.auth-container form button[type="submit"] {
+  margin-top: .5rem;
+  padding: .9rem 1.25rem;
+  font-size: 1rem;
+  background: var(--forest); border-color: var(--forest); color: #fff;
+}
+.auth-container form button[type="submit"]:hover { background: var(--green); border-color: var(--green); color: #fff; }
+
+.auth-switch, .register {
+  margin-top: 1.5rem; text-align: center; color: var(--ink-2); font-size: .92rem;
+}
+.auth-switch a, .register a { font-weight: 600; }
+.auth-back { display: inline-block; margin-top: 1.25rem; font-size: .85rem; color: var(--ink-3); }
+
+/* Tablet / phone: stack, brand becomes a compact header */
+@media (max-width: 860px) {
+  .auth-shell { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+  .auth-aside { padding: 1.25rem 1.25rem 1.75rem; gap: 1rem; }
+  .auth-aside::before { width: 300px; height: 300px; right: -120px; bottom: -150px; }
+  .auth-pitch h1 { font-size: 1.9rem; margin-bottom: .5rem; }
+  .auth-pitch p, .auth-stats { display: none; }
+  .auth-main { border-radius: 26px 26px 0 0; margin-top: -1.25rem; position: relative; padding-top: 2rem; align-items: flex-start; }
+}

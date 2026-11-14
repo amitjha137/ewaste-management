@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0d2218">
+  <title>Bin User | E-Waste</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="config.js"></script>
+</head>
+<body>
+  <!-- Deposit Modal -->
+  <div id="depositModal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <button class="modal-close" id="closeDepositModal" aria-label="Close">×</button>
+      <h3>Deposit e-waste</h3>
+      <form id="depositFormModal">
+        <label for="binSelectModal">Select bin</label>
+        <select id="binSelectModal" required></select>
+        <label for="amountInputModal">Amount (kg)</label>
+        <input type="number" id="amountInputModal" min="0.1" step="0.1" required placeholder="e.g. 2.5">
+        <button type="submit" class="btn">Deposit</button>
+      </form>
+    </div>
+  </div>
+  <div class="hamburger-menu" id="hamburgerMenu" aria-label="Open menu">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+  <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+    <div class="sidebar-header">
+      <div class="sidebar-logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.4-5.7"/><path d="M20.5 3v4.5H16"/><path d="M9 15c0-3.2 2.1-5.2 6-5.2 0 4-2 6.2-5.2 6.2"/></svg></div>
+      <div class="sidebar-title">E-Waste<small>Recycling network</small></div>
+    </div>
+    <ul class="sidebar-menu">
+      <li><a href="index.html"><span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg></span> Home</a></li>
+      <li><a href="dashboard.html"><span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7.5" height="9" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="5" rx="1.5"/><rect x="13.5" y="11" width="7.5" height="10" rx="1.5"/><rect x="3" y="15" width="7.5" height="6" rx="1.5"/></svg></span> Dashboard</a></li>
+      <li><a href="bin-user.html"><span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg></span> Bin User</a></li>
+      <li><a href="box-status.html"><span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg></span> Box Status</a></li>
+      <li><a href="stats.html"><span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V11M10 20V4M16 20v-7M22 20H2"/></svg></span> Stats</a></li>
+      <li><a href="about.html"><span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5"/></svg></span> About</a></li>
+    </ul>
+  </aside>
+
+  <main id="dashboardContent" class="main-content">
+    <!-- Bin User content will be rendered here by dashboard.js -->
+  </main>
+
+  <!-- IoT / Camera control panel (Bin User) -->
+  <section id="iotPanel" class="main-content iot-panel">
+    <div class="chart-container">
+      <h3>📷 Test camera &amp; model</h3>
+      <p class="panel-sub">Point the camera at an item and let the classifier tell you what it is.</p>
+      <div class="iot-controls">
+        <video id="webcamVideo" autoplay playsinline style="display:none"></video>
+        <div class="iot-toolbar">
+          <button id="webcamStartBtn" class="btn">Start Camera</button>
+          <button id="webcamStopBtn" class="btn">Stop Camera</button>
+          <button id="webcamCaptureBtn" class="btn">Capture</button>
+          <button id="iotRunModelBtn" class="btn">Run Model</button>
+          <button id="webcamOneClickBtn" class="btn">One-click Capture &amp; Run</button>
+          <button id="iotCaptureBtn" class="btn">Request Device Capture</button>
+          <button id="iotSortBtn" class="btn">Sort item now (device)</button>
+          <button id="testCameraBtn" class="btn">Test Camera &amp; Model</button>
+        </div>
+
+        <div class="iot-output">
+          <div id="iotImageContainer"></div>
+          <div id="iotModelResult"></div>
+        </div>
+
+        <div id="iotStatus" class="iot-status">Status: Unknown</div>
+      </div>
+    </div>
+  </section>
+
+  <script src="sidebar.js"></script>
+  <script type="module" src="notifications.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  
+  <script type="module">
+    import { renderBinUserDashboard } from './dashboard.js';
+    // render the Bin User dashboard
+    renderBinUserDashboard();
+  </script>
+  <script type="module" src="iot.js"></script>
+</body>
+</html>

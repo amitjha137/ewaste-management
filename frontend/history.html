@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0d2218">
+
+  <title>Garbage History</title>
+
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    .history-card {
+      background: var(--card, #fff);
+      border-radius: 14px;
+      padding: 24px;
+      margin-top: 24px;
+      overflow-x: auto;
+    }
+
+    .history-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    .history-table th,
+    .history-table td {
+      padding: 15px;
+      text-align: left;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .history-table th {
+      background: #eaf4ee;
+      color: #245c43;
+    }
+
+    .deposit-amount {
+      color: #2474b5;
+      font-weight: bold;
+    }
+
+    .collection-amount {
+      color: #245c43;
+      font-weight: bold;
+    }
+
+    #status {
+      margin-top: 15px;
+    }
+
+    @media (max-width: 600px) {
+      .history-card {
+        padding: 15px;
+      }
+
+      .history-table th,
+      .history-table td {
+        padding: 10px;
+        font-size: 13px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Hamburger Menu -->
+  <div class="hamburger-menu" id="hamburgerMenu" aria-label="Open menu">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+
+    <div class="sidebar-header">
+
+      <div class="sidebar-logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2.2" stroke-linecap="round"
+          stroke-linejoin="round" aria-hidden="true">
+
+          <path d="M20 12a8 8 0 1 1-2.4-5.7"/>
+          <path d="M20.5 3v4.5H16"/>
+          <path d="M9 15c0-3.2 2.1-5.2 6-5.2 0 4-2 6.2-5.2 6.2"/>
+
+        </svg>
+      </div>
+
+      <div class="sidebar-title">
+        E-Waste
+        <small>Recycling network</small>
+      </div>
+
+    </div>
+
+    <ul class="sidebar-menu">
+
+      <li><a href="index.html">Home</a></li>
+      <li><a href="dashboard.html">Dashboard</a></li>
+      <li><a href="bin-user.html">Bin User</a></li>
+      <li><a href="box-status.html">Box Status</a></li>
+      <li><a href="stats.html">Stats</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="history.html">History</a></li>
+
+    </ul>
+
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+
+    <div class="page-head slide-in-up">
+
+      <div class="eyebrow">History</div>
+
+      <h2>Garbage History</h2>
+
+      <p>
+        View daily garbage deposited by users and collected by collectors.
+      </p>
+
+    </div>
+
+    <!-- History Table -->
+    <section class="history-card slide-in-up">
+
+      <h3>Daily Garbage Records</h3>
+
+      <table class="history-table">
+
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Garbage Deposited</th>
+            <th>Garbage Collected</th>
+          </tr>
+        </thead>
+
+        <tbody id="historyTable">
+
+          <tr>
+            <td colspan="3">Loading history...</td>
+          </tr>
+
+        </tbody>
+
+      </table>
+
+      <div id="status"></div>
+
+    </section>
+
+  </main>
+
+  <!-- Load History Data -->
+  <script>
+
+    async function loadHistory() {
+
+      const table = document.getElementById('historyTable');
+      const status = document.getElementById('status');
+
+      try {
+
+        const backendUrl = 'https://ewaste-backend-14z2.onrender.com';
+
+        const response = await fetch(
+          `${backendUrl}/api/events`
+        );
+
+        if (!response.ok) {
+          throw new Error('Unable to fetch records');
+        }
+
+        const events = await response.json();
+
+        if (!Array.isArray(events)) {
+          throw new Error('Invalid history data');
+        }
+
+        // Calculate daily deposit and collection totals
+        const dailyTotals = {};
+
+        events.forEach(event => {
+
+          // Only deposit and collection events
+          if (
+            event.type !== 'deposit' &&
+            event.type !== 'collection'
+          ) {
+            return;
+          }
+
+          const date = new Date(event.timestamp);
+
+          if (isNaN(date.getTime())) return;
+
+          // Indian timezone date
+          const dateKey = new Intl.DateTimeFormat('en-CA', {
+            timeZone: 'Asia/Kolkata',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit'
+          }).format(date);
+
+          if (!dailyTotals[dateKey]) {
+
+            dailyTotals[dateKey] = {
+              deposit: 0,
+              collection: 0
+            };
+
+          }
+
+          const amount = Number(event.amount);
+
+          if (!Number.isFinite(amount)) return;
+
+          if (event.type === 'deposit') {
+
+            dailyTotals[dateKey].deposit += amount;
+
+          } else if (event.type === 'collection') {
+
+            dailyTotals[dateKey].collection += amount;
+
+          }
+
+        });
+
+        // Sort newest dates first
+        const dates = Object.keys(dailyTotals).sort(
+          (a, b) => b.localeCompare(a)
+        );
+
+        // No records
+        if (dates.length === 0) {
+
+          table.innerHTML = `
+            <tr>
+              <td colspan="3">No garbage history available yet.</td>
+            </tr>
+          `;
+
+          status.textContent = '';
+          return;
+        }
+
+        // Display records
+        table.innerHTML = dates.map(dateKey => {
+
+          const formattedDate = new Date(
+            dateKey + 'T00:00:00+05:30'
+          ).toLocaleDateString('en-IN', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+            timeZone: 'Asia/Kolkata'
+          });
+
+          const totals = dailyTotals[dateKey];
+
+          return `
+            <tr>
+
+              <td>${formattedDate}</td>
+
+              <td class="deposit-amount">
+                ${totals.deposit.toFixed(2)} kg
+              </td>
+
+              <td class="collection-amount">
+                ${totals.collection.toFixed(2)} kg
+              </td>
+
+            </tr>
+          `;
+
+        }).join('');
+
+        status.textContent = '';
+
+      } catch (error) {
+
+        console.error('History error:', error);
+
+        table.innerHTML = `
+          <tr>
+            <td colspan="3">
+              Unable to load garbage history.
+            </td>
+          </tr>
+        `;
+
+        status.textContent =
+          'Please check your internet connection and try again.';
+
+      }
+
+    }
+
+    loadHistory();
+
+  </script>
+
+  <script src="sidebar.js"></script>
+
+</body>
+</html>

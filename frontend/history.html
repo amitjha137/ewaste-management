@@ -51,6 +51,22 @@
       margin-top: 15px;
     }
 
+    .live-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 13px;
+      margin-top: 12px;
+      color: #247a45;
+    }
+
+    .live-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #22c55e;
+    }
+
     @media (max-width: 600px) {
       .history-card {
         padding: 15px;
@@ -125,6 +141,11 @@
         View daily garbage deposited by users and collected by collectors.
       </p>
 
+      <div class="live-indicator">
+        <span class="live-dot" id="liveDot"></span>
+        <span id="liveStatus">Connecting to live updates...</span>
+      </div>
+
     </div>
 
     <!-- History Table -->
@@ -158,20 +179,29 @@
 
   </main>
 
-  <!-- Load History Data -->
-  <script>
+  <!-- History + Socket.IO Live Updates -->
+  <script type="module">
 
+    import { io } from 'https://cdn.socket.io/4.7.5/socket.io.esm.min.js';
+
+    const backendUrl = 'https://ewaste-backend-14z2.onrender.com';
+
+    const table = document.getElementById('historyTable');
+    const status = document.getElementById('status');
+    const liveStatus = document.getElementById('liveStatus');
+    const liveDot = document.getElementById('liveDot');
+
+    // Connect to backend Socket.IO
+    const socket = io(backendUrl);
+
+    // Calculate and display history
     async function loadHistory() {
-
-      const table = document.getElementById('historyTable');
-      const status = document.getElementById('status');
 
       try {
 
-        const backendUrl = 'https://ewaste-backend-14z2.onrender.com';
-
         const response = await fetch(
-          `${backendUrl}/api/events`
+          `${backendUrl}/api/events`,
+          { cache: 'no-store' }
         );
 
         if (!response.ok) {
@@ -184,12 +214,11 @@
           throw new Error('Invalid history data');
         }
 
-        // Calculate daily deposit and collection totals
         const dailyTotals = {};
 
+        // Calculate daily totals
         events.forEach(event => {
 
-          // Only deposit and collection events
           if (
             event.type !== 'deposit' &&
             event.type !== 'collection'
@@ -201,7 +230,6 @@
 
           if (isNaN(date.getTime())) return;
 
-          // Indian timezone date
           const dateKey = new Intl.DateTimeFormat('en-CA', {
             timeZone: 'Asia/Kolkata',
             year: 'numeric',
@@ -244,7 +272,9 @@
 
           table.innerHTML = `
             <tr>
-              <td colspan="3">No garbage history available yet.</td>
+              <td colspan="3">
+                No garbage history available yet.
+              </td>
             </tr>
           `;
 
@@ -290,22 +320,55 @@
 
         console.error('History error:', error);
 
-        table.innerHTML = `
-          <tr>
-            <td colspan="3">
-              Unable to load garbage history.
-            </td>
-          </tr>
-        `;
-
         status.textContent =
-          'Please check your internet connection and try again.';
+          'Unable to load history. Please check your connection.';
 
       }
 
     }
 
+    // Initial history load
     loadHistory();
+
+    // Socket connected
+    socket.on('connect', () => {
+
+      console.log('History Socket Connected:', socket.id);
+
+      liveStatus.textContent = 'Live updates connected';
+      liveDot.style.background = '#22c55e';
+
+    });
+
+    // Socket disconnected
+    socket.on('disconnect', () => {
+
+      console.log('History Socket Disconnected');
+
+      liveStatus.textContent = 'Reconnecting...';
+      liveDot.style.background = '#f59e0b';
+
+    });
+
+    // Receive new event from backend
+    socket.on('new-event', (event) => {
+
+      console.log('New live event received:', event);
+
+      // Refresh history automatically
+      loadHistory();
+
+    });
+
+    // Connection error
+    socket.on('connect_error', (error) => {
+
+      console.error('Socket connection error:', error.message);
+
+      liveStatus.textContent = 'Live connection unavailable';
+      liveDot.style.background = '#ef4444';
+
+    });
 
   </script>
 

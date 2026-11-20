@@ -6,6 +6,10 @@ const eventSchema = new mongoose.Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   bin: { type: mongoose.Schema.Types.ObjectId, ref: 'Bin' },
   amount: { type: Number, default: 0 },
+  estimatedWeightGrams: {
+  type: Number,
+  default: 0
+  },
   category: { 
     type: String, 
     enum: WEB_CATEGORIES,

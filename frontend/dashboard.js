@@ -2,7 +2,7 @@
 import { getUserStats, calculateImpact, getEarnedBadges, BADGES, EWASTE_CATEGORIES } from './rewards.js';
 import { renderBinGrid, renderCategorySelector, sortBinsByAvailability } from './bin-selector.js';
 import { createDepositsChart, createCategoryChart, createImpactChart, createCollectionsChart } from './dashboard-charts.js';
-import { getBins, getEvents, getStats, postEvent, getUsers, createBin, updateBin, updateStats, updateUser, deleteUser, deleteBin } from './api.js';
+import { getBins, getEvents,getMyEvents, getStats, postEvent, getUsers, createBin, updateBin, updateStats, updateUser, deleteUser, deleteBin } from './api.js';
 
 const dashboardContent = document.getElementById('dashboardContent');
 

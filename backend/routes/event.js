@@ -1,32 +1,58 @@
 import express from 'express';
 import Event from '../models/Event.js';
 import Bin from '../models/Bin.js';
+import { requireAuth } from './auth.js';
 
 const router = express.Router();
 
-// Get all events
-router.get('/', async (req, res) => {
+// Get only the logged-in user's events
+router.get('/mine', requireAuth, async (req, res) => {
   try {
-    const events = await Event.find().populate('user bin');
-    res.json(events);
+    const events = await Event.find({ user: req.user.id })
+      .populate('bin')
+      .sort({ timestamp: -1 });
+
+    return res.status(200).json(events);
   } catch (err) {
-    console.error('Error fetching events:', err);
-    return res.json([]);
+    console.error('Error fetching user events:', err);
+    return res.status(500).json({
+      error: 'failed_to_fetch_user_events'
+    });
   }
 });
 
-// Create event and automatically update bin
-router.post('/', async (req, res) => {
+// Get all events (Admin / Collector dashboard)
+router.get('/', async (req, res) => {
   try {
-    const eventData = req.body;
+    const events = await Event.find()
+      .populate('user bin')
+      .sort({ timestamp: -1 });
+
+    return res.status(200).json(events);
+  } catch (err) {
+    console.error('Error fetching events:', err);
+    return res.status(500).json({
+      error: 'failed_to_fetch_events'
+    });
+  }
+});
+
+// Create event and automatically update shared bin
+router.post('/', requireAuth, async (req, res) => {
+  try {
+    const eventData = { ...req.body };
+
+    // Never trust user ID supplied by frontend
+    delete eventData.user;
+
+    // Associate deposits with authenticated user
+    if (eventData.type === 'deposit') {
+      eventData.user = req.user.id;
+    }
 
     let updatedBin = null;
 
-    // Update bin only for deposit and collection events
-    if (
-      ['deposit', 'collection'].includes(eventData.type) &&
-      eventData.bin
-    ) {
+    if (['deposit', 'collection'].includes(eventData.type) && eventData.bin) {
       const bin = await Bin.findById(eventData.bin);
 
       if (!bin) {
@@ -44,10 +70,9 @@ router.post('/', async (req, res) => {
           });
         }
 
-        // Add deposited weight
+        // Shared bin weight: combines deposits from all users
         bin.currentWeight = (bin.currentWeight || 0) + weight;
 
-        // Calculate bin fill percentage
         const capacity = bin.capacity || 100;
 
         bin.level = Math.min(
@@ -55,13 +80,12 @@ router.post('/', async (req, res) => {
           Math.round((bin.currentWeight / capacity) * 100)
         );
 
-        // Update status
-        bin.status =
-          bin.currentWeight >= capacity ? 'full' : 'available';
+        bin.status = bin.currentWeight >= capacity
+          ? 'full'
+          : 'available';
       }
 
       if (eventData.type === 'collection') {
-        // Reset bin after collector collects the waste
         bin.currentWeight = 0;
         bin.level = 0;
         bin.status = 'available';
@@ -73,11 +97,11 @@ router.post('/', async (req, res) => {
       updatedBin = await bin.save();
     }
 
-    // Save event in history
+    // Save event
     const event = new Event(eventData);
     await event.save();
 
-    // Send live updates
+    // Socket.IO live updates
     const io = req.app.get('io');
 
     if (io) {
@@ -89,6 +113,10 @@ router.post('/', async (req, res) => {
     }
 
     console.log('Event created:', event.type);
+
+    if (eventData.user) {
+      console.log('Associated user:', eventData.user);
+    }
 
     if (updatedBin) {
       console.log('Bin automatically updated:', updatedBin.location);

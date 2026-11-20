@@ -9,7 +9,7 @@ const dashboardContent = document.getElementById('dashboardContent');
 // Enhanced Bin User Dashboard with all new features
 async function renderBinUserDashboard() {
   try {
-    const [bins, events] = await Promise.all([getBins(), getEvents()]);
+    const [bins, events] = await Promise.all([getBins(), getMyEvents()]);
   const userEvents = events.filter(e => e.type === 'deposit');
   
   // Calculate user statistics

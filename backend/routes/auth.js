@@ -46,7 +46,7 @@ router.post('/login', async (req, res) => {
 });
 
 // Middleware to protect routes
-const requireAuth = async (req, res, next) => {
+export const requireAuth = async (req, res, next) => {
   try {
     const auth = req.headers.authorization;
     if (!auth || !auth.startsWith('Bearer ')) return res.status(401).json({ error: 'missing_token' });

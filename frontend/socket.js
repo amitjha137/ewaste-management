@@ -1,13 +1,45 @@
 // Socket.io client for real-time updates
-import { io } from "https://cdn.socket.io/4.7.5/socket.io.esm.min.js";
 
-// Same backend resolution as api.js
-const ORIGIN = (typeof window !== 'undefined' && window.BACKEND_URL)
-  ? window.BACKEND_URL.replace(/\/$/, '')
-  : ((typeof window !== 'undefined' && window.location && window.location.origin && window.location.origin !== 'null')
-      ? window.location.origin
-      : 'http://localhost:5000');
+// Backend URL
+const ORIGIN = (
+    window.BACKEND_URL
+        ? window.BACKEND_URL.replace(/\/$/, '')
+        : 'https://ewaste-backend-14z2.onrender.com'
+);
 
-const socket = io(ORIGIN);
+// Load Socket.IO client directly from our backend
+function loadSocketIO() {
+    return new Promise((resolve, reject) => {
+
+        // Already loaded?
+        if (window.io) {
+            resolve(window.io);
+            return;
+        }
+
+        const script = document.createElement('script');
+
+        script.src = `${ORIGIN}/socket.io/socket.io.js`;
+
+        script.onload = () => {
+            if (window.io) {
+                resolve(window.io);
+            } else {
+                reject(new Error('Socket.IO client not available'));
+            }
+        };
+
+        script.onerror = () => {
+            reject(new Error('Failed to load Socket.IO client'));
+        };
+
+        document.head.appendChild(script);
+    });
+}
+
+// Connect to backend
+const ioClient = await loadSocketIO();
+
+const socket = ioClient(ORIGIN);
 
 export default socket;

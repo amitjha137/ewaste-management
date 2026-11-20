@@ -1,4 +1,4 @@
-import { io as ioClient } from 'https://cdn.socket.io/4.7.5/socket.io.esm.min.js';
+import socket from './socket.js';
 import { getMockEnabled } from './api.js';
 
 // Connect to backend socket.io. Use the current page origin so local dev points to local backend
@@ -7,7 +7,7 @@ const DEFAULT_BACKEND = 'http://localhost:5000';
 // You can create a small `config.js` that sets `window.BACKEND_URL = 'https://your-backend.onrender.com'`
 const ORIGIN = (typeof window !== 'undefined' && window.BACKEND_URL) ? window.BACKEND_URL : ((typeof window !== 'undefined' && window.location && window.location.origin && window.location.origin !== 'null') ? window.location.origin : DEFAULT_BACKEND);
 const SOCKET_URL = ORIGIN;
-const socket = ioClient(SOCKET_URL);
+
 
 // Expose to window for quick debugging
 window.iotSocket = socket;
